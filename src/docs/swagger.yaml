@@ -1,0 +1,1674 @@
+openapi: 3.0.0
+info:
+  title: API Documentation
+  version: 1.0.0
+  description: API documentation for the application
+servers:
+  - url: http://localhost:3125
+    description: Local server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
+
+paths:
+  /register:
+    post:
+      summary: Register User
+      description: Registers a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                phone:
+                  type: string
+                dateOfBirth:
+                  type: Date
+      responses:
+        '200':
+          description: User registered successfully
+        '400':
+          description: Error registering user
+
+  /login_with_phone:
+    post:
+      summary: Login User
+      description: Logs in a user with phone number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                phone:
+                  type: string
+      responses:
+        '200':
+          description: User logged in successfully
+        '401':
+          description: Unauthorized
+
+  /loginadmin:
+    post:
+      summary: Admin Login
+      description: Logs in an admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Admin logged in successfully
+        '401':
+          description: Unauthorized
+
+  /verify:
+    post:
+      summary: Verify OTP
+      description: Verifies the OTP for user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                otp:
+                  type: string
+                phone:
+                  type: string
+      responses:
+        '200':
+          description: OTP verified successfully
+        '400':
+          description: Error verifying OTP
+
+  /me:
+    get:
+      summary: Fetch Current User
+      description: Fetches the currently authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successfully fetched user
+        '401':
+          description: Unauthorized
+
+  /resend-otp:
+    post:
+      summary: Resend OTP
+      description: Resends OTP to the user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                phone:
+                  type: string
+      responses:
+        '200':
+          description: OTP resent successfully
+        '400':
+          description: Error resending OTP
+
+  /pharmacy-details:
+    get:
+      summary: Get Pharmacy Details
+      description: Fetches pharmacy details for the authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successfully fetched pharmacy details
+        '401':
+          description: Unauthorized
+
+  /update-pharmacy-details:
+    put:
+      summary: Update Pharmacy Details
+      description: Updates pharmacy details for the authenticated user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                shopName:
+                  type: string
+                secondaryContactNumber:
+                  type: string
+                address:
+                  type: string
+                gstNumber:
+                  type: string
+                drugLicenseNumber:
+                  type: string
+                buyerType:
+                  type: string
+                drugLicenseImage:
+                  type: string
+                shopLocation:
+                  type: string
+                landmark:
+                  type: string
+                pincode:
+                  type: string
+                preferredContactNumber:
+                  type: string
+                preferredLanguage:
+                  type: string
+                optionalMessage:
+                  type: string
+                status:
+                  type: string
+                  enum: ['pending', 'approved', 'rejected']
+              required:
+                - phone
+                - status
+      responses:
+        '200':
+          description: Successfully updated pharmacy details
+        '400':
+          description: Error updating pharmacy details
+
+
+  /update-user-info:
+    put:
+      summary: Update User Details
+      description: Updates user details for the authenticated user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+      responses:
+        '200':
+          description: Successfully updated user details
+        '400':
+          description: Error updating user details
+
+  /add-address:
+    post:
+      summary: Add Address
+      description: Adds a new address for the authenticated user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                street:
+                  type: string
+                city:
+                  type: string
+                state:
+                  type: string
+                country:
+                  type: string
+                postalCode:
+                  type: string
+                  pattern: "^\d{5,6}$"
+      responses:
+        '200':
+          description: Successfully added address
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Address added successfully
+                  data:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                      street:
+                        type: string
+                      city:
+                        type: string
+                      state:
+                        type: string
+                      country:
+                        type: string
+                      postalCode:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+        '400':
+          description: Error adding address
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+
+  /update-address/{addressId}:
+    put:
+      summary: Update Address
+      description: Updates an existing address for the authenticated user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: addressId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                street:
+                  type: string
+                city:
+                  type: string
+                state:
+                  type: string
+                country:
+                  type: string
+                postalCode:
+                  type: string
+                  pattern: "^\d{5,6}$"
+      responses:
+        '200':
+          description: Successfully updated address
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Address updated successfully
+                  data:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                      street:
+                        type: string
+                      city:
+                        type: string
+                      state:
+                        type: string
+                      country:
+                        type: string
+                      postalCode:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+        '400':
+          description: Error updating address
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+
+  /delete-address/{addressId}:
+    delete:
+      summary: Delete Address
+      description: Deletes an existing address for the authenticated user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: addressId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully deleted address
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Address deleted successfully
+                  data:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                      street:
+                        type: string
+                      city:
+                        type: string
+                      state:
+                        type: string
+                      country:
+                        type: string
+                      postalCode:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+        '400':
+          description: Error deleting address
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+
+  /admin/approved-pharmacy-details:
+    get:
+      summary: Get Approved Pharmacies
+      description: Fetches all approved pharmacies (admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successfully fetched approved pharmacies
+        '401':
+          description: Unauthorized
+
+  /admin/pending-requests:
+    get:
+      summary: Get Pending Requests
+      description: Fetches all pending pharmacy requests (admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successfully fetched pending requests
+        '401':
+          description: Unauthorized
+
+  /admin/set-pharmacy-status/{id}:
+    put:
+      summary: Set Pharmacy Status
+      description: Sets the status of a pharmacy request (admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID of the pharmacy request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+      responses:
+        '200':
+          description: Successfully set pharmacy status
+        '400':
+          description: Error setting pharmacy status
+
+  /{userId}:
+    delete:
+      summary: Delete User with Pharmacy
+      description: Deletes a user along with their pharmacy (admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+          description: ID of the user
+      responses:
+        '200':
+          description: Successfully deleted user with pharmacy
+        '400':
+          description: Error deleting user with pharmacy
+
+  /get-medicine:
+    get:
+      summary: Get All Medicines
+      description: Fetches all medicines
+      responses:
+        '200':
+          description: Successfully fetched all medicines
+        '400':
+          description: Error fetching medicines
+
+  /single-medicine/{id}:
+    get:
+      summary: Get Single Medicine
+      description: Fetches a single medicine by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID of the medicine
+      responses:
+        '200':
+          description: Successfully fetched medicine
+        '400':
+          description: Error fetching medicine
+
+  /medicines-by-manufacturer/{manufacturer}:
+    get:
+      summary: Get Medicines by Manufacturer
+      description: Fetches medicines by manufacturer
+      parameters:
+        - in: path
+          name: manufacturer
+          required: true
+          schema:
+            type: string
+          description: Name of the manufacturer
+      responses:
+        '200':
+          description: Successfully fetched medicines by manufacturer
+        '400':
+          description: Error fetching medicines
+
+  /create-medicine:
+    post:
+      summary: Create Medicine
+      description: Creates a new medicine
+      security:
+        - bearerAuth: [] # Ensure that this matches your security scheme
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                NAME:
+                  type: string
+                  description: "The name of the medicine"
+                COMPOSITION:
+                  type: string
+                  description: "The composition of the medicine"
+                PACKING:
+                  type: string
+                  description: "The packing details of the medicine"
+                TYPE:
+                  type: string
+                  description: "The type of medicine"
+                MRP:
+                  type: number
+                  description: "The maximum retail price of the medicine"
+                MANUFACTURER:
+                  type: string
+                  description: "The manufacturer of the medicine"
+                DISCOUNT:
+                  type: number
+                  description: "The discount on the medicine"
+                  default: 0
+                SALE_RATE:
+                  type: number
+                  description: "The sale rate of the medicine"
+                Final_PURCHASE_RATE:
+                  type: number
+                  description: "The final purchase rate of the medicine"
+                PURCHASE_DISCOUNT:
+                  type: number
+                  description: "The purchase discount of the medicine"
+                CATEGORY:
+                  type: string
+                  description: "The category of the medicine"
+                  enum:
+                    - Generic_Medicine
+                    - Big_Brand_Medicine
+      responses:
+        '200':
+          description: Successfully created medicine
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Medicine created successfully
+                  data:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                      NAME:
+                        type: string
+                      COMPOSITION:
+                        type: string
+                      PACKING:
+                        type: string
+                      TYPE:
+                        type: string
+                      MRP:
+                        type: number
+                      MANUFACTURER:
+                        type: string
+                      DISCOUNT:
+                        type: number
+                      SALE_RATE:
+                        type: number
+                      Final_PURCHASE_RATE:
+                        type: number
+                      PURCHASE_DISCOUNT:
+                        type: number
+                      CATEGORY:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+        '400':
+          description: Error creating medicine
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Invalid input or missing required fields
+        '403':
+          description: Forbidden - Only admins can create medicine
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: You do not have permission to perform this action
+
+  /delete-medicine/{id}:
+    delete:
+      summary: Delete Medicine
+      description: Deletes a medicine by ID
+      security:
+        - bearerAuth: [] # Ensure this matches your security scheme
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID of the medicine
+      responses:
+        '200':
+          description: Successfully deleted medicine
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Medicine deleted successfully
+        '400':
+          description: Error deleting medicine
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Error deleting medicine
+        '403':
+          description: Forbidden - Only admins can delete medicine
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: You do not have permission to perform this action
+
+  /update-medicine/{id}:
+    put:
+      summary: Update Medicine
+      description: Updates a medicine by ID
+      security:
+        - bearerAuth: [] # Ensure this matches your security scheme
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID of the medicine
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                NAME:
+                  type: string
+                COMPOSITION:
+                  type: string
+                PACKING:
+                  type: string
+                TYPE:
+                  type: string
+                MRP:
+                  type: number
+                MANUFACTURER:
+                  type: string
+                DISCOUNT:
+                  type: number
+                SALE_RATE:
+                  type: number
+                Final_PURCHASE_RATE:
+                  type: number
+                PURCHASE_DISCOUNT:
+                  type: number
+                CATEGORY:
+                  type: string
+                  enum:
+                    - Generic_Medicine
+                    - Big_Brand_Medicine
+      responses:
+        '200':
+          description: Successfully updated medicine
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Medicine updated successfully
+        '400':
+          description: Error updating medicine
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Error updating medicine
+        '403':
+          description: Forbidden - Only admins can update medicine
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: You do not have permission to perform this action
+
+  /update-discount/{manufacturer}:
+    put:
+      summary: Update Discount and Price
+      description: Updates discount and price for medicines by manufacturer
+      security:
+        - bearerAuth: [] # Ensure this matches your security scheme
+      parameters:
+        - in: path
+          name: manufacturer
+          required: true
+          schema:
+            type: string
+          description: Name of the manufacturer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                DISCOUNT:
+                  type: number
+                MRP:
+                  type: number
+      responses:
+        '200':
+          description: Successfully updated discount and price
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Discount and price updated successfully
+        '400':
+          description: Error updating discount and price
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Error updating discount and price
+        '403':
+          description: Forbidden - Only admins can update discount and price
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: You do not have permission to perform this action
+
+  /bulk-insert-medicine:
+    post:
+      summary: Bulk Insert Medicines
+      description: Inserts multiple medicines in bulk
+      security:
+        - bearerAuth: [] # Ensure this matches your security scheme
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                medicines:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      NAME:
+                        type: string
+                      COMPOSITION:
+                        type: string
+                      PACKING:
+                        type: string
+                      TYPE:
+                        type: string
+                      MRP:
+                        type: number
+                      MANUFACTURER:
+                        type: string
+                      DISCOUNT:
+                        type: number
+                      SALE_RATE:
+                        type: number
+                      Final_PURCHASE_RATE:
+                        type: number
+                      PURCHASE_DISCOUNT:
+                        type: number
+                      CATEGORY:
+                        type: string
+                        enum:
+                          - Generic_Medicine
+                          - Big_Brand_Medicine
+      responses:
+        '200':
+          description: Successfully inserted medicines
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Medicines inserted successfully
+        '400':
+          description: Error inserting medicines
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Error inserting medicines
+        '403':
+          description: Forbidden - Only admins can insert medicines
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: You do not have permission to perform this action
+
+
+  /medicines/search:
+    get:
+      summary: Search Medicines
+      description: Searches medicines based on query
+      parameters:
+        - in: query
+          name: q
+          required: true
+          schema:
+            type: string
+          description: Search query
+      responses:
+        '200':
+          description: Successfully searched medicines
+        '400':
+          description: Error searching medicines
+
+  /manufacturers/{category}:
+    get:
+      summary: Get Manufacturers by Category
+      description: Fetches manufacturers by category
+      parameters:
+        - in: path
+          name: category
+          required: true
+          schema:
+            type: string
+          description: Category of the medicines
+      responses:
+        '200':
+          description: Successfully fetched manufacturers
+        '400':
+          description: Error fetching manufacturers
+
+  /wishlist/toggle:
+    post:
+      summary: Toggle Wishlist
+      description: Toggles wishlist for authenticated user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+      responses:
+        '200':
+          description: Successfully toggled wishlist
+        '400':
+          description: Error toggling wishlist
+
+  /wishlist:
+    get:
+      summary: Get Wishlist
+      description: Fetches wishlist for authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successfully fetched wishlist
+        '400':
+          description: Error fetching wishlist
+
+  
+  /add-cart:
+    post:
+      summary: Add Product to Cart
+      description: Adds a product to the cart for the authenticated user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                medicineId:
+                  type: string
+                  description: ID of the medicine
+                quantity:
+                  type: number
+                  description: Quantity of the medicine
+      responses:
+        '200':
+          description: Successfully added product to cart
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Product added to cart successfully
+        '400':
+          description: Error adding product to cart
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Error adding product to cart
+
+  /remove-cartitem/{medicineId}:
+    patch:
+      summary: Remove Cart Item
+      description: Removes a cart item for the authenticated user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: medicineId
+          required: true
+          schema:
+            type: string
+          description: ID of the medicine
+      responses:
+        '200':
+          description: Successfully removed cart item
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Cart item removed successfully
+        '400':
+          description: Error removing cart item
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Error removing cart item
+
+  /cart:
+    get:
+      summary: Get Cart
+      description: Fetches the cart for the authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successfully fetched cart
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: success
+                  cart:
+                    type: object
+                    properties:
+                      user:
+                        type: string
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            medicineId:
+                              type: string
+                            quantity:
+                              type: number
+                            name:
+                              type: string
+                            mrp:
+                              type: number
+                            finalPurchaseRate:
+                              type: number
+                            manufacturer:
+                              type: string
+                            cateogery:
+                              type: string
+                      totalPrice:
+                        type: number
+        '400':
+          description: Error fetching cart
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Error fetching cart
+
+  /cart/{itemId}:
+    delete:
+      summary: Clear Cart
+      description: Clears the cart for the authenticated user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          schema:
+            type: string
+          description: ID of the cart item
+      responses:
+        '200':
+          description: Successfully cleared cart
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Cart cleared successfully
+        '400':
+          description: Error clearing cart
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Error clearing cart
+
+  /cart/{itemId}/increment:
+    patch:
+      summary: Increment Cart Item
+      description: Increments the quantity of a cart item for the authenticated user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          schema:
+            type: string
+          description: ID of the cart item
+      responses:
+        '200':
+          description: Successfully incremented cart item
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Cart item incremented successfully
+        '400':
+          description: Error incrementing cart item
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Error incrementing cart item
+
+  /cart/{itemId}/decrement:
+    patch:
+      summary: Decrement Cart Item
+      description: Decrements the quantity of a cart item for the authenticated user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          schema:
+            type: string
+          description: ID of the cart item
+      responses:
+        '200':
+          description: Successfully decremented cart item
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Cart item decremented successfully
+        '400':
+          description: Error decrementing cart item
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Error decrementing cart item
+
+
+  /get-order-summary:
+    post:
+      summary: Get order summary
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                // Specify any request body properties here if needed
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/OrderSummary'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  message:
+                    type: string
+  /create-order:
+    post:
+      summary: Create a new order
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewOrder'
+      responses:
+        '201':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Order'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  message:
+                    type: string
+  /{orderId}/status:
+    put:
+      summary: Update order status
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum:
+                    - processing
+                    - delivered
+                    - cancelled
+      responses:
+        '200':
+          description: Order status updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Order'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  message:
+                    type: string
+  /get-order/{orderId}:
+    get:
+      summary: Get order by ID
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Order'
+        '404':
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  message:
+                    type: string
+  /orders/delivered:
+    get:
+      summary: Get delivered orders
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  message:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Order'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  message:
+                    type: string
+  /orders/new-last-12-hours:
+    get:
+      summary: Get new orders within last 12 hours
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  message:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Order'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  message:
+                    type: string
+  /order/{orderId}/status:
+    get:
+      summary: Check order status
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  message:
+                    type: string
+
+  /create-cuppn:
+    post:
+      summary: Create Coupon
+      description: Creates a new coupon
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                discount:
+                  type: number
+      responses:
+        '200':
+          description: Successfully created coupon
+        '400':
+          description: Error creating coupon
+
+  /cuppon-delete/{code}:
+    delete:
+      summary: Delete Coupon
+      description: Deletes a coupon by code
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: code
+          required: true
+          schema:
+            type: string
+          description: Code of the coupon
+      responses:
+        '200':
+          description: Successfully deleted coupon
+        '400':
+          description: Error deleting coupon
+
+  /getall-cuppon:
+    get:
+      summary: Get All Coupons
+      description: Fetches all coupons
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successfully fetched all coupons
+        '400':
+          description: Error fetching coupons
+
+  /apply-cuppon:
+    post:
+      summary: Apply Coupon
+      description: Applies a coupon to the order
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                userId:
+                  type: string
+      responses:
+        '200':
+          description: Successfully applied coupon
+        '400':
+          description: Error applying coupon
+
+  /notify:
+    post:
+      summary: Notify User
+      description: Sends a notification to a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                message:
+                  type: string
+      responses:
+        '200':
+          description: Successfully sent notification
+        '400':
+          description: Error sending notification
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
